@@ -21,7 +21,7 @@ upload-via-arduino: all
 	$(AVRDUDE) -p $(CPU) -cstk500v1 -P $(PORT) -b19200 -Uflash:w:timer.hex:i
 	
 upload:	all
-	$(AVRDUDE) -v -C $(CONF) -q -q -p $(CPU) -carduino -P $(PORT) -b115200 -D -Uflash:w:timer.hex:i
+	$(AVRDUDE) -C $(CONF) -q -q -p $(CPU) -carduino -P $(PORT) -b115200 -D -Uflash:w:timer.hex:i
 
 main.o: main.cpp
 	avr-gcc -mmcu=$(CPU) $(MACROS) -c main.cpp -Os -I n5110

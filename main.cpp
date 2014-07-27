@@ -10,20 +10,20 @@ extern "C" {
     // #include "glcd/devices/AVR8.h"
 }
 
-volatile unsigned int time=0;
+volatile int64_t time=0;
 
 dht_t dht; 
 int temperature = 0;
 int humidity = 0;
-volatile int counter = 0;
+volatile int64_t counter = 0;
 
 #define COUNTER_EEPROM_ADDRESS 0
 
-char *itoa(int a, int len=0) {
+char *itoa(int64_t a, int len=0) {
     static char buf[16];
     char *p = buf + 15;
     p[0] = 0;
-    int v = a;
+    int64_t v = a;
     int l = len == 0?15:len;
     int i;
     for(i=0;i<l;i++) {
@@ -35,13 +35,13 @@ char *itoa(int a, int len=0) {
 }
 
 void backlit_on() {
-    DDRB |= (1 << 0);
-    PORTB |= (1 << 0);
+    DDRD |= (1 << 7);
+    PORTD |= (1 << 7);
 }
 
 void backlit_off() {
-    DDRB |= (1 << 0);
-    PORTB &= ~(1 << 0);
+    DDRD |= (1 << 7);
+    PORTD &= ~(1 << 7);
 }
 
 //#define DHT_PIN(reg) BIT(C, 0, reg)
@@ -96,7 +96,10 @@ void update_dht() {
     }
 }
 
-void printInt(int a, int n=4, int delim=true) {
+void printInt(int64_t a, int n=4, int delim=true) {
+    if(a < 0) {
+        a = -a;
+    }
     unsigned char *temp = (unsigned char *)itoa(a, n);
     int i;
     for(i=0;i<n;i++) {
@@ -113,24 +116,17 @@ void printChar(const char c) {
 
 
 void init_timers() {
-    // OCR2 = 255;
-    // // Set to CTC Mode
-    // TCCR2 |= (1 << WGM21);
-    // //Set interrupt on compare match
-    // TIMSK |= (1 << OCIE2);
-    // // set prescaler to 64 and starts PWM
-    // TCCR2 |= (1 << CS21);
-    // // enable interrupts
-    // sei();
-    // DDRC |= (1 << 0);
-    // PORTC &= ~(1 << 0);    
-    // while (1) {
-    //     if(time % 60000 > 30000) {
-    //         PORTC &= ~(1 << 0);
-    //     } else {
-    //         PORTC |= (1 << 0);
-    //     }
-    // }
+    // Set the Timer Mode to CTC
+    TCCR0A |= (1 << WGM01);
+
+    // Set the value that you want to count to
+    OCR0A = 0x20;
+
+    //Set the ISR COMPA vect
+    TIMSK0 |= (1 << OCIE0A);
+
+    // set prescaler to 64 and start the timer
+    TCCR0B |= (1 << CS01) | (1 << CS00);
 }
 
 void init_interrupts() {
@@ -187,7 +183,7 @@ void loop() {
     printInt(counter, 5, false);
     printChar(' ');
 
-    printInt(time, 5, false);
+    printInt(time, 14, false);
 
     Lcd_update();
     
@@ -207,9 +203,6 @@ ISR(INT0_vect) {
     counter++;
 }
  
-// ISR (TIMER2_COMP_vect){
-//     time++;
-//     if(time == 60000) {
-//         time = 0;
-//     }
-// }
+ISR (TIMER0_COMPA_vect) {
+    time++;
+}
