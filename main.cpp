@@ -10,36 +10,50 @@ extern "C" {
 
 volatile unsigned int time=0;
 
-int main(void)
-{
-    //Инициализируем дисплей
-    Lcd_init();
-    LcdContrast(65);
+char *itoa(int a, int len=0) {
+    static char buf[16];
+    char *p = buf + 15;
+    p[0] = 0;
+    int v = a;
+    int l = len == 0?15:len;
+    int i;
+    for(i=0;i<l;i++) {
+        p--;
+        p[0] = '0'  + (v % 10);
+        v = v / 10;
+    }
+    return p;
+}
+
+backlit_on() {
     DDRB |= (1 << 0);
     PORTB |= (1 << 0);
+}
+
+backlit_off() {
+    DDRB |= (1 << 0);
+    PORTB &= ~(1 << 0);
+}
+
+char buffer[255] = {0};
+
+int main(void) {
+
+    Lcd_init();
+    LcdContrast(65);
+
+    backlit_on();
+
     _delay_ms(50);
-    while(1)
-    {
-        //согласно шпаргалке 
-        //очистим дисплей
+
+    int counter = 0;
+
+    while(1) {
         Lcd_clear();
-        //Lcd_prints для вывода статичных данных
-        Lcd_prints(0, 0, FONT_1X,(unsigned char *)PSTR("Hello!"));
-        //передадим данные  
+        Lcd_print(0, 0, FONT_1X,(unsigned char *)itoa(counter, 2));
         Lcd_update();
-        //подождем 2 секунды
-        _delay_ms(2000);
-        //очистим дисплей
-        Lcd_clear();
-        //Нарисуем кружки
-        for (int i=0;i<=10;i++)
-        {
-            Lcd_circle(40, 24, i, PIXEL_ON);
-        }
-        //передадим данные
-        Lcd_update();
-        //подождем 2 секунды
-        _delay_ms(2000);
+        _delay_ms(1000);
+        counter ++;
     }
     /*DDRB = 0xFF;
     while(true) { 
