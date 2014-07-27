@@ -56,24 +56,32 @@
 	 * \name SPI port and pins
 	 * @{
 	 */
-	#define AVR_SS_PORT          PORTB
-	#define AVR_SS_PIN           0		
-	#define CONTROLLER_MOSI_PORT PORTB
-	#define CONTROLLER_MOSI_PIN  2
-	#define CONTROLLER_MISO_PORT PORTB
-	#define CONTROLLER_MISO_PIN  3
+	// #define AVR_SS_PORT          PORTB
+	// #define AVR_SS_PIN           2		
+	// #define CONTROLLER_MOSI_PORT PORTB
+	// #define CONTROLLER_MOSI_PIN  2
+	// #define CONTROLLER_MISO_PORT PORTB
+	// #define CONTROLLER_MISO_PIN  2
+	//Din
+	#define CONTROLLER_DIN_PORT  PORTB
+	#define CONTROLLER_DIN_PIN   2
+
+	//Clk
 	#define CONTROLLER_SCK_PORT  PORTB
-	#define CONTROLLER_SCK_PIN   1
+	#define CONTROLLER_SCK_PIN   3
 	/**@}*/
 
 	/**
 	 * \name Other pins needed for serial LCD controller
 	 * @{
 	 */
-	#define CONTROLLER_SS_PORT   PORTC
-	#define CONTROLLER_SS_PIN    5
+	 //CE
+	#define CONTROLLER_SS_PORT   PORTB
+	#define CONTROLLER_SS_PIN    6
+	//DC
 	#define CONTROLLER_DC_PORT   PORTB
 	#define CONTROLLER_DC_PIN    5
+	//RST
 	#define CONTROLLER_RST_PORT  PORTB
 	#define CONTROLLER_RST_PIN   4
 	/**@}*/
@@ -84,13 +92,13 @@
 	 * @{
 	 */
 	#define AVR_SS_PORT          PORTB
-	#define AVR_SS_PIN           0	
+	#define AVR_SS_PIN           2
 	#define CONTROLLER_MOSI_PORT PORTB
 	#define CONTROLLER_MOSI_PIN  2
 	#define CONTROLLER_MISO_PORT PORTB
-	#define CONTROLLER_MISO_PIN  3
+	#define CONTROLLER_MISO_PIN  1
 	#define CONTROLLER_SCK_PORT  PORTB
-	#define CONTROLLER_SCK_PIN   1
+	#define CONTROLLER_SCK_PIN   3
 	/**@}*/
 
 	/**
@@ -118,6 +126,13 @@
 #define GLCD_DC_HIGH()    sbi(CONTROLLER_DC_PORT,CONTROLLER_DC_PIN)
 #define GLCD_RESET_LOW()  cbi(CONTROLLER_RST_PORT,CONTROLLER_RST_PIN)
 #define GLCD_RESET_HIGH() sbi(CONTROLLER_RST_PORT,CONTROLLER_RST_PIN)
+
+#define GLCD_DIN_LOW()  cbi(CONTROLLER_DIN_PORT,CONTROLLER_DIN_PIN)
+#define GLCD_DIN_HIGH() sbi(CONTROLLER_DIN_PORT,CONTROLLER_DIN_PIN)
+#define GLCD_SCK_LOW()  cbi(CONTROLLER_SCK_PORT,CONTROLLER_SCK_PIN)
+#define GLCD_SCK_HIGH() sbi(CONTROLLER_SCK_PORT,CONTROLLER_SCK_PIN)
+
+
 
 #define GLCD_A0_LOW()     cbi(CONTROLLER_A0_PORT,CONTROLLER_A0_PIN)
 #define GLCD_A0_HIGH()    sbi(CONTROLLER_A0_PORT,CONTROLLER_A0_PIN)

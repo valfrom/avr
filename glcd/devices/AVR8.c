@@ -50,14 +50,15 @@ void glcd_init(void)
 	 * Note: AVR's SS pin must be set to output, regardless of whether we
 	 * actually use it. This is a requirement of SPI mster mode.
 	 */
-	sbi(DDR(AVR_SS_PORT),AVR_SS_PIN);
+	// sbi(DDR(AVR_SS_PORT),AVR_SS_PIN);
 	
 	/*
 	 *  Set MOSI, Master SS, SCK to output (otherwise SPI won't work)
 	 *  Must be done even if native SS pin not used
 	 */
-	sbi(DDR(CONTROLLER_MOSI_PORT),CONTROLLER_MOSI_PIN);
-	sbi(DDR(CONTROLLER_SS_PORT),CONTROLLER_SS_PIN);
+	// sbi(DDR(CONTROLLER_MOSI_PORT),CONTROLLER_MOSI_PIN);
+	// sbi(DDR(CONTROLLER_SS_PORT),CONTROLLER_SS_PIN);
+	sbi(DDR(CONTROLLER_DIN_PORT),CONTROLLER_DIN_PIN);
 	sbi(DDR(CONTROLLER_SCK_PORT),CONTROLLER_SCK_PIN);
 		
 	/* Set SS, DC and RST pins to output */
@@ -172,13 +173,28 @@ void glcd_init(void)
 	
 }
 
-void glcd_spi_write(uint8_t c)
-{
-	GLCD_SELECT();
-	SPDR = c;
-	while(!(SPSR & (1<<SPIF))); /* wait until transmission is complete */
-	GLCD_DESELECT();	
+// void glcd_spi_write(uint8_t c)
+// {
+// 	GLCD_SELECT();
+// 	SPDR = c;
+// 	while(!(SPSR & (1<<SPIF))); /* wait until transmission is complete 
+// 	GLCD_DESELECT();	
+// }
+
+void glcd_spi_write(uint8_t d) {
+  GLCD_SELECT();
+  for(uint8_t bit = 0x80; bit; bit >>= 1) {
+    GLCD_SCK_LOW();
+    if(d & bit) {
+    	GLCD_DIN_HIGH();
+    } else {
+    	GLCD_DIN_LOW();
+    }        
+    GLCD_SCK_HIGH();
+  }
+  GLCD_DESELECT();
 }
+
 
 void glcd_reset(void)
 {
