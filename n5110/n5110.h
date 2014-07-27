@@ -20,11 +20,11 @@
 #define LCD_DDR                    DDRB
 
 // Распиновка порта
-#define LCD_DC_PIN                 PB5	// DC
-#define LCD_CE_PIN                 PB6	// SCE
-#define SPI_MOSI_PIN               PB2  // SDIN 
-#define LCD_RST_PIN                PB4	// RESET
-#define SPI_CLK_PIN                PB3  // SCLK 
+#define LCD_DC_PIN                 PB1 // DC
+#define LCD_CE_PIN                 PB2 // SCE
+#define SPI_MOSI_PIN               PB3  // SDIN 
+#define LCD_RST_PIN                PB4 // RESET
+#define SPI_CLK_PIN                PB5  // SCLK 
 
 // Разрешение дисплея в пикселях
 #define LCD_X_RES                  84    // разрешение по горизонтали

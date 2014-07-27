@@ -13,15 +13,18 @@ volatile unsigned int time=0;
 int main(void)
 {
     //»нициализируем дисплей
-Lcd_init();
-LcdContrast(65);
+    Lcd_init();
+    LcdContrast(65);
+    DDRB |= (1 << 0);
+    PORTB |= (1 << 0);
+    _delay_ms(50);
     while(1)
     {
         //согласно шпаргалке 
         //очистим дисплей
         Lcd_clear();
         //Lcd_prints дл€ вывода статичных данных
-        Lcd_prints(0, 0, FONT_1X,(unsigned char *)PSTR("ѕривет!"));
+        Lcd_prints(0, 0, FONT_1X,(unsigned char *)PSTR("Hello!"));
         //передадим данные  
         Lcd_update();
         //подождем 2 секунды
