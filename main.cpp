@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 
 extern "C" {
     #include "n5110/n5110.h"
@@ -10,6 +11,13 @@ extern "C" {
 }
 
 volatile unsigned int time=0;
+
+dht_t dht; 
+int temperature = 0;
+int humidity = 0;
+volatile int counter = 0;
+
+#define COUNTER_EEPROM_ADDRESS 0
 
 char *itoa(int a, int len=0) {
     static char buf[16];
@@ -68,7 +76,6 @@ static inline int16_t dhtproc(dht_request_t req, uint16_t arg){
     return 0;
 }
 
-dht_t dht; 
 
 void init_dht() {
     PORTC &= ~(1 << DHT_PIN);
@@ -76,8 +83,7 @@ void init_dht() {
     DHT_Init(&dht, dhtproc);
 }
 
-int temperature = 0;
-int humidity = 0;
+
 
 void update_dht() {
     if(DHT_Read11(&dht) == DHTLIB_OK){
@@ -105,9 +111,8 @@ void printChar(const char c) {
     LcdChr(FONT_1X, c);
 }
 
-char buffer[255] = {0};
 
-void init_timer() {
+void init_timers() {
     // OCR2 = 255;
     // // Set to CTC Mode
     // TCCR2 |= (1 << WGM21);
@@ -128,17 +133,45 @@ void init_timer() {
     // }
 }
 
+void init_interrupts() {
+    PIND |= (1 << DDD2);
+    DDRD &= ~(1 << DDD2);
+
+    EICRA |= (1<<ISC01) | (1<<ISC00);
+    EIMSK |= (1<<INT0);
+}
+
+int oldCounter = 0;
+
+
+void load_data() {
+    eeprom_read_block(&oldCounter, COUNTER_EEPROM_ADDRESS, sizeof(int));
+    counter = oldCounter;
+}
+
+
+void write_data() {
+    if(oldCounter != counter) {
+        oldCounter = counter;
+        eeprom_write_block(&oldCounter, COUNTER_EEPROM_ADDRESS, sizeof(int));
+        
+    }
+}
+
 void setup() {
-    init_timer();
+    cli();
+    load_data();
+    init_interrupts();
+    init_timers();
     init_dht();
 
     Lcd_init();
     LcdContrast(70);
 
     backlit_on();
+    sei();
 }
 
-int counter = 0;
 
 void loop() {
     Lcd_clear();
@@ -149,12 +182,18 @@ void loop() {
     printChar(' ');
     printInt(humidity, 2, false);
     printChar('%');
+    printChar(' ');
+
+    printInt(counter, 5, false);
+    printChar(' ');
+
+    printInt(time, 5, false);
 
     Lcd_update();
     
     _delay_ms(1000);
     update_dht();
-    counter ++;
+    write_data();
 }
 
 int main(void) {
@@ -164,6 +203,9 @@ int main(void) {
     }
 }
 
+ISR(INT0_vect) {
+    counter++;
+}
  
 // ISR (TIMER2_COMP_vect){
 //     time++;
