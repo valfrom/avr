@@ -1,5 +1,7 @@
-CPU=atmega8
-PORT=/dev/cu.usbmodem1421
+CPU=atmega328p
+PORT=/dev/cu.usbmodem1411
+AVRDUDE=/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/avrdude
+CONF=/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/etc/avrdude.conf
 
 all: main.o glcd.o
 	avr-gcc -mmcu=$(CPU) main.o glcd.o AVR8.o graphics.o graphs.o text.o PCD8544.o -o timer.bin
@@ -8,6 +10,9 @@ all: main.o glcd.o
 
 upload: all
 	avrdude -p $(CPU) -cstk500v1 -P $(PORT) -b19200 -Uflash:w:timer.hex:i
+
+burn:	all
+	$(AVRDUDE) -C $(CONF) -q -q -p $(CPU) -carduino -P $(PORT) -b115200 -D -Uflash:w:timer.hex:i
 
 main.o: main.cpp
 	avr-gcc -mmcu=$(CPU) -D__DELAY_BACKWARD_COMPATIBLE__ -DF_CPU=16000000 -DGLCD_USE_AVR_DELAY -DGLCD_DEVICE_AVR8 -DGLCD_CONTROLLER_PCD8544 -c main.cpp -Os -I glcd

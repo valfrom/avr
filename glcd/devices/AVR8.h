@@ -52,31 +52,35 @@
 
 #if defined(GLCD_CONTROLLER_PCD8544)
 	
-	/**
-	 * \name SPI port and pins
-	 * @{
-	 */
 	#define AVR_SS_PORT          PORTB
 	#define AVR_SS_PIN           0		
 	#define CONTROLLER_MOSI_PORT PORTB
 	#define CONTROLLER_MOSI_PIN  2
 	#define CONTROLLER_MISO_PORT PORTB
 	#define CONTROLLER_MISO_PIN  3
+
+	//Din
+	#define CONTROLLER_DIN_PORT  PORTB
+	#define CONTROLLER_DIN_PIN   2
+
+	//Clk
 	#define CONTROLLER_SCK_PORT  PORTB
-	#define CONTROLLER_SCK_PIN   1
+	#define CONTROLLER_SCK_PIN   3
 	/**@}*/
 
 	/**
 	 * \name Other pins needed for serial LCD controller
 	 * @{
 	 */
-	#define CONTROLLER_SS_PORT   PORTC
-	#define CONTROLLER_SS_PIN    5
+	 //CE
+	#define CONTROLLER_SS_PORT   PORTB
+	#define CONTROLLER_SS_PIN    6
+	//DC
 	#define CONTROLLER_DC_PORT   PORTB
 	#define CONTROLLER_DC_PIN    5
+	//RST
 	#define CONTROLLER_RST_PORT  PORTB
 	#define CONTROLLER_RST_PIN   4
-	/**@}*/
 
 #elif defined (GLCD_CONTROLLER_ST7565R)
 	/**
